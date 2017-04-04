@@ -27,7 +27,7 @@ while(1)
     {
         $toutCnt = $toutCnt + 1
         Write-Host "`r                                                                                                           " -NoNewline
-        Write-Host "`r$toutCnt timeout at $($ToutTime = Get-Date -Format "yyyy-MM-dd HH:mm:ss:ff")"
+        Write-Host "`r$toutCnt timeout at $(Get-Date -Format "yyyy-MM-dd HH:mm:ss:ff")"
     }
 
     $lost = ($toutCnt/$pingCnt * 100).ToString("F2")
