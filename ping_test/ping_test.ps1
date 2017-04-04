@@ -5,11 +5,13 @@ param
     $des = (Get-NetIPConfiguration).IPv4DefaultGateway[0].NextHop,
     $t1 = 10,
     $t2 = 100,
-    $p = 1000
+    $p = 1000,
+    $cyc = -1
 )
 
 $t1Cnt = $t2Cnt = $toutCnt = $pingCnt = 0
-$StartTime = Get-Date -Format "yyyy-MM-dd HH:mm:ss:ff"
+$StartT = Get-Date
+$StartTime = $StartT.ToString("yyyy-MM-dd HH:mm:ss:ff")
 
 Write-Host "`n//------------------------------------------------------//`n"
 Write-Host "Pinging $des, started at $StartTime. `n"
@@ -25,12 +27,12 @@ while(1)
     {
         $toutCnt = $toutCnt + 1
         Write-Host "`r                                                                                                           " -NoNewline
-        Write-Host "`r$toutCnt timeout at $($StartTime = Get-Date -Format "yyyy-MM-dd HH:mm:ss:ff")"
+        Write-Host "`r$toutCnt timeout at $($ToutTime = Get-Date -Format "yyyy-MM-dd HH:mm:ss:ff")"
     }
 
     $lost = ($toutCnt/$pingCnt * 100).ToString("F2")
 
-    Write-Host "`r$pingCnt " -ForegroundColor white -NoNewline
+    Write-Host "`r    $pingCnt " -ForegroundColor white -NoNewline
     Write-Host "pings:  " -NoNewline
     Write-Host "$t1Cnt " -ForegroundColor green -NoNewline
     Write-Host "<$t1 ms; " -NoNewline
@@ -41,6 +43,16 @@ while(1)
     Write-Host "$lost% " -ForegroundColor red -NoNewline
     Write-Host "lost. " -NoNewline
 
+    if($cyc -gt 0)
+    {
+        $cyc = $cyc -1
+        if($cyc -eq 0) {break}
+    }
+
     Start-Sleep -Milliseconds $p
 }
 
+$ts = New-TimeSpan -Start $StartT -End $(Get-Date)
+
+Write-Host "`n`n$toutCnt($lost%) of $pingCnt pings timeout in $ts. "
+Write-Host "//------------------------------------------------------//`n"
